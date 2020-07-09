@@ -1,22 +1,17 @@
 package com.nick.wood.game_engine.systems;
 
-import com.nick.wood.game_engine.model.game_objects.GameObject;
 import com.nick.wood.game_engine.model.game_objects.TransformObject;
 import com.nick.wood.game_engine.model.input.ControllerState;
 import com.nick.wood.maths.objects.QuaternionF;
 import com.nick.wood.maths.objects.vector.Vec3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class DirectTransformController implements GESystem {
+public class DirectTransformController implements Control {
 
 	private TransformObject transformObject;
 	private final boolean enableLook;
 	private final boolean enableMove;
 	private float sensitivity;
 	private float speed;
-	private ControllerState controllerState;
 
 	public DirectTransformController(TransformObject transformObject, boolean enableLook, boolean enableMove, float sensitivity, float speed) {
 		this.transformObject = transformObject;
@@ -26,7 +21,7 @@ public class DirectTransformController implements GESystem {
 		this.speed = speed;
 	}
 
-	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
+	public void update(ControllerState controllerState) {
 		if (controllerState != null) {
 
 			// W
@@ -130,10 +125,6 @@ public class DirectTransformController implements GESystem {
 	}
 
 	public void action() {
-	}
-
-	public void setUserInput(ControllerState controllerState) {
-		this.controllerState = controllerState;
 	}
 
 }
