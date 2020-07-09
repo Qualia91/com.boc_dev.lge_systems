@@ -61,8 +61,7 @@ public class ProceduralGeneration {
 	                                         int startX,
 	                                         int startY,
 	                                         Perlin2Df[] perlin2Ds,
-	                                         int amplitudeScale,
-	                                         Function<Double, Double> amplitudeScalingFunction) {
+	                                         int amplitudeScale) {
 
 		float[][] grid = new float[size][size];
 
@@ -72,8 +71,14 @@ public class ProceduralGeneration {
 
 			for (int i = startX; i < size + startX; i++) {
 				for (int j = startY; j < size + startY; j++) {
-					grid[i - startX][j - startY] += perlin2Ds[octave].getPoint(Math.abs(i), Math.abs(j)) * amplitudeScalingFunction.apply(amplitude * amplitudeScale);
+					grid[i - startX][j - startY] += (perlin2Ds[octave].getPoint(Math.abs(i), Math.abs(j)) * amplitude);
 				}
+			}
+		}
+
+		for (int i = startX; i < size + startX; i++) {
+			for (int j = startY; j < size + startY; j++) {
+				grid[i - startX][j - startY] *= amplitudeScale;
 			}
 		}
 

@@ -62,6 +62,7 @@ public class TerrainGeneration implements GESystem {
 											terrainGenerationObject.getChunkSize(),
 											terrainGenerationObject.getPerlin2Ds(),
 											terrainGenerationObject.getCellSpace(),
+											terrainGenerationObject.getAmplitude(),
 											terrainGenerationObject.getTerrainTextureGameObjects()
 									);
 									chunkIndexSceneGraphHashMap.put(chunkIndex, gameObject);
@@ -106,6 +107,7 @@ public class TerrainGeneration implements GESystem {
 	                               int chunkSize,
 	                               Perlin2Df[] perlin2Ds,
 	                               int cellSpace,
+	                               int amplitude,
 	                               ArrayList<TerrainTextureGameObject> terrainTextureGameObjects) {
 
 		ProceduralGeneration proceduralGeneration = new ProceduralGeneration();
@@ -115,8 +117,7 @@ public class TerrainGeneration implements GESystem {
 				chunkIndex.getX() * chunkSize,
 				chunkIndex.getY() * chunkSize,
 				perlin2Ds,
-				30,
-				amp -> amp * amp * amp
+				amplitude
 		);
 
 
