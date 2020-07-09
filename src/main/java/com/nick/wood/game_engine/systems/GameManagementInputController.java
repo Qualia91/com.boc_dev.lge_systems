@@ -19,7 +19,7 @@ public class GameManagementInputController implements GESystem {
 		this.bus = bus;
 	}
 
-	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap) {
+	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
 		// ESC
 		if (controllerState.getKeys()[256]) {
 			bus.dispatch(new ManagementEvent(new ManagementEventData(), ManagementEventType.SHUTDOWN));

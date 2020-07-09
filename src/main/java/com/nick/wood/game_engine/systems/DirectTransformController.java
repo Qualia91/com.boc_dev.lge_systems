@@ -26,7 +26,7 @@ public class DirectTransformController implements GESystem {
 		this.speed = speed;
 	}
 
-	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap) {
+	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
 		if (controllerState != null) {
 
 			// W

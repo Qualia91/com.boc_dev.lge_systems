@@ -18,9 +18,16 @@ public class TerrainGeneration implements GESystem {
 
 	private final ArrayList<Vec2i> loadedChunkIndices = new ArrayList<>();
 	private final ConcurrentHashMap<Vec2i, GameObject> chunkIndexSceneGraphHashMap = new ConcurrentHashMap<>();
+	private final long steps;
 
-	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap) {
-		try {
+	public TerrainGeneration(long steps) {
+		this.steps = steps;
+	}
+
+	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
+
+		if (timeSinceStart % steps == 0) {
+
 			// first find the main camera. There should only be one main camera in any of the scenes
 			TransformObject cameraTransform = GameObjectUtils.FindMainCameraTransform(layeredGameObjectsMap);
 
@@ -86,8 +93,6 @@ public class TerrainGeneration implements GESystem {
 				}
 
 			}
-		}catch (Exception e) {
-			e.printStackTrace();
 		}
 
 	}

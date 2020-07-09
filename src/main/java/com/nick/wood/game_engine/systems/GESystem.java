@@ -6,5 +6,5 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface GESystem {
-	void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap);
+	void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart);
 }

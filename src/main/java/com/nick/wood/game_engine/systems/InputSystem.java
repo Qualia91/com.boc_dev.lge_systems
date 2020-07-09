@@ -10,7 +10,7 @@ public class InputSystem implements GESystem {
 
 
 	@Override
-	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap) {
+	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
 
 	}
 }
