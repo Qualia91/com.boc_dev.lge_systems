@@ -1,4 +1,4 @@
-package com.nick.wood.game_engine.systems;
+package com.nick.wood.game_engine.systems.control;
 
 import com.nick.wood.game_engine.model.game_objects.TransformObject;
 import com.nick.wood.game_engine.model.input.ControllerState;

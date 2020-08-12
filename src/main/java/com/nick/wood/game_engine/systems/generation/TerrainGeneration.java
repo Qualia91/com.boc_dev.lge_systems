@@ -1,8 +1,9 @@
-package com.nick.wood.game_engine.systems;
+package com.nick.wood.game_engine.systems.generation;
 
 import com.nick.wood.game_engine.model.game_objects.*;
 import com.nick.wood.game_engine.model.types.GameObjectType;
 import com.nick.wood.game_engine.model.utils.GameObjectUtils;
+import com.nick.wood.game_engine.systems.GESystem;
 import com.nick.wood.maths.noise.Perlin2Df;
 import com.nick.wood.maths.objects.srt.Transform;
 import com.nick.wood.maths.objects.srt.TransformBuilder;

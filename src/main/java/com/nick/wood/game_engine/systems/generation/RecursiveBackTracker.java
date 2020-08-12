@@ -1,4 +1,4 @@
-package com.nick.wood.game_engine.systems;
+package com.nick.wood.game_engine.systems.generation;
 
 import com.nick.wood.maths.objects.vector.Vec2i;
 

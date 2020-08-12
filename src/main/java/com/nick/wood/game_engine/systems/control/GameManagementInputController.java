@@ -1,4 +1,4 @@
-package com.nick.wood.game_engine.systems;
+package com.nick.wood.game_engine.systems.control;
 
 import com.nick.wood.game_engine.event_bus.event_data.ManagementEventData;
 import com.nick.wood.game_engine.event_bus.event_types.ManagementEventType;

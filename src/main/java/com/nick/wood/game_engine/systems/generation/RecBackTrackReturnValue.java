@@ -1,4 +1,4 @@
-package com.nick.wood.game_engine.systems;
+package com.nick.wood.game_engine.systems.generation;
 
 import java.util.ArrayList;
 

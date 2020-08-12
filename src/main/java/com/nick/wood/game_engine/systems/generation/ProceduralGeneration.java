@@ -1,13 +1,10 @@
-package com.nick.wood.game_engine.systems;
+package com.nick.wood.game_engine.systems.generation;
 
 import com.nick.wood.maths.noise.Perlin2Df;
 
 import java.util.function.Function;
 
 public class ProceduralGeneration {
-
-	public ProceduralGeneration() {
-	}
 
 	/**
 	 *  @param randomNumberArraySize

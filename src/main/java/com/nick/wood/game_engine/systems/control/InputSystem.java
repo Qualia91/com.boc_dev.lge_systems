@@ -1,7 +1,8 @@
-package com.nick.wood.game_engine.systems;
+package com.nick.wood.game_engine.systems.control;
 
 import com.nick.wood.game_engine.model.game_objects.GameObject;
 import com.nick.wood.game_engine.model.input.ControllerState;
+import com.nick.wood.game_engine.systems.GESystem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
