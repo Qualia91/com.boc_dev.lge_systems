@@ -78,7 +78,8 @@ public class RigidBodyPhysicsSystem implements GESystem {
 											rigidBody.getOrigin(),
 											rigidBody.getRotation(),
 											rigidBody.getLinearMomentum(),
-											rigidBody.getAngularMomentum()
+											rigidBody.getAngularMomentum(),
+											rigidBody.getType().toString()
 									);
 								}
 							}
