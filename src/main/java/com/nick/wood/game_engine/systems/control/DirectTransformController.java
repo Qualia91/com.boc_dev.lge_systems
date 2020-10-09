@@ -12,6 +12,7 @@ public class DirectTransformController implements Control {
 	private final boolean enableMove;
 	private float sensitivity;
 	private float speed;
+	private KeyMapping keyMapping = new KeyMapping();
 
 	public DirectTransformController(TransformObject transformObject, boolean enableLook, boolean enableMove, float sensitivity, float speed) {
 		this.transformObject = transformObject;
@@ -21,31 +22,35 @@ public class DirectTransformController implements Control {
 		this.speed = speed;
 	}
 
+	public void changeDefaultKeyMapping(KeyMapping keyMapping) {
+		this.keyMapping = keyMapping;
+	}
+
 	public void update(ControllerState controllerState) {
 		if (controllerState != null) {
 
 			// W
-			if (controllerState.getKeys()[87]) {
+			if (controllerState.getKeys()[keyMapping.getForward()]) {
 				forwardLinear();
 			}
 			// A
-			if (controllerState.getKeys()[65]) {
+			if (controllerState.getKeys()[keyMapping.getLeft()]) {
 				leftLinear();
 			}
 			// S
-			if (controllerState.getKeys()[83]) {
+			if (controllerState.getKeys()[keyMapping.getBack()]) {
 				backLinear();
 			}
 			// D
-			if (controllerState.getKeys()[68]) {
+			if (controllerState.getKeys()[keyMapping.getRight()]) {
 				rightLinear();
 			}
 			// Q
-			if (controllerState.getKeys()[81]) {
+			if (controllerState.getKeys()[keyMapping.getUp()]) {
 				upLinear();
 			}
 			// E
-			if (controllerState.getKeys()[69]) {
+			if (controllerState.getKeys()[keyMapping.getDown()]) {
 				downLinear();
 			}
 			// mouse movement
