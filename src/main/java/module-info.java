@@ -7,4 +7,5 @@ module com.nick.wood.game.engine.systems {
 	requires com.nick.wood.game_engine.model;
 	requires com.nick.wood.maths;
 	requires com.nick.wood.rigid_body_dynamics;
+	requires com.nick.wood.game_engine.gcs_model;
 }
