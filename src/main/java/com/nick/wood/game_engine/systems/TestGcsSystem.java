@@ -1,4 +1,4 @@
-package com.nick.wood.game_engine.systems.boids;
+package com.nick.wood.game_engine.systems;
 
 import com.nick.wood.game_engine.gcs_model.gcs.Registry;
 import com.nick.wood.game_engine.gcs_model.generated.components.ComponentType;
@@ -7,12 +7,14 @@ import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
 import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
 import com.nick.wood.maths.objects.QuaternionF;
 import com.nick.wood.maths.objects.matrix.Matrix4f;
+import com.nick.wood.maths.objects.vector.Vec;
 import com.nick.wood.maths.objects.vector.Vec3f;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class BoidSystem implements GcsSystem<TransformObject> {
+public class TestGcsSystem implements GcsSystem<TransformObject> {
 
 
 	@Override

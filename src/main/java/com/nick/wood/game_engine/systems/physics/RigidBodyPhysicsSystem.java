@@ -1,11 +1,11 @@
 package com.nick.wood.game_engine.systems.physics;
 
-import com.nick.wood.game_engine.model.game_objects.GameObject;
-import com.nick.wood.game_engine.model.game_objects.RigidBodyObject;
-import com.nick.wood.game_engine.model.game_objects.TransformObject;
-import com.nick.wood.game_engine.model.types.GameObjectType;
-import com.nick.wood.game_engine.model.types.RigidBodyObjectType;
-import com.nick.wood.game_engine.model.utils.GameObjectUtils;
+import com.nick.wood.game_engine.gcs_model.gcs.Registry;
+import com.nick.wood.game_engine.gcs_model.generated.components.ComponentType;
+import com.nick.wood.game_engine.gcs_model.generated.components.RigidBodyObject;
+import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
+import com.nick.wood.game_engine.gcs_model.generated.enums.RigidBodyObjectType;
+import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
 import com.nick.wood.game_engine.systems.GESystem;
 import com.nick.wood.maths.objects.vector.Vec3f;
 import com.nick.wood.physics_library.rigid_body_dynamics_verbose.RigidBody;
@@ -14,81 +14,15 @@ import com.nick.wood.physics_library.rigid_body_dynamics_verbose.Simulation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 
-public class RigidBodyPhysicsSystem implements GESystem {
+public class RigidBodyPhysicsSystem implements GcsSystem<RigidBodyObject> {
 
 	private final Simulation rbSim;
-	private final long steps;
-	private long lastTime = 0L;
 
-	public RigidBodyPhysicsSystem(long steps) {
+	public RigidBodyPhysicsSystem() {
 		this.rbSim = new Simulation();
-		this.steps = steps;
-	}
-
-	@Override
-	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
-
-		// find all rigid bodies in sim
-		// create physics rigid bodies
-		// iterate physics sim
-		// get rigid bodies from sim
-		// go through and update transforms accordingly
-		long stepTimeNano = timeSinceStart - lastTime;
-		double stepTime = (double) stepTimeNano / 1_000_000_000;
-		if (stepTimeNano > 17_000_000) {
-
-			for (ArrayList<GameObject> gameObjects : layeredGameObjectsMap.values()) {
-
-				ArrayList<RigidBodyObject> foundGameObjects = GameObjectUtils.FindGameObjectsByType(gameObjects, GameObjectType.RIGID_BODY);
-
-				ArrayList<RigidBody> rigidBodies = new ArrayList<>();
-
-				for (RigidBodyObject foundGameObject : foundGameObjects) {
-					rigidBodies.add(new RigidBody(
-							foundGameObject.getGameObjectData().getUuid(),
-							foundGameObject.getBuilder().getMass(),
-							foundGameObject.getBuilder().getDimensions(),
-							foundGameObject.getBuilder().getOrigin(),
-							foundGameObject.getBuilder().getRotation(),
-							foundGameObject.getBuilder().getLinearMomentum(),
-							foundGameObject.getBuilder().getAngularMomentum(),
-							convertRigidBodyType(foundGameObject.getBuilder().getRigidBodyType())
-					));
-				}
-
-				ArrayList<RigidBody> updatedRigidBodies = rbSim.iterate(
-						stepTime,
-						rigidBodies
-				);
-
-				for (RigidBodyObject foundGameObject : foundGameObjects) {
-					RigidBody rigidBody = null;
-					for (RigidBody updatedRigidBody : updatedRigidBodies) {
-						if (foundGameObject.getGameObjectData().getUuid().equals(updatedRigidBody.getUuid())) {
-							rigidBody = updatedRigidBody;
-						}
-						if (rigidBody != null) {
-							for (GameObject child : foundGameObject.getGameObjectData().getChildren()) {
-								if (child.getGameObjectData().getType().equals(GameObjectType.TRANSFORM)) {
-									((TransformObject) child).setPosition((Vec3f) rigidBody.getOrigin().toVecf());
-									((TransformObject) child).setRotation(rigidBody.getRotation().toQuatF());
-									foundGameObject.getBuilder().setData(
-											rigidBody.getMass(),
-											rigidBody.getOrigin(),
-											rigidBody.getRotation(),
-											rigidBody.getLinearMomentum(),
-											rigidBody.getAngularMomentum(),
-											rigidBody.getType().toString()
-									);
-								}
-							}
-						}
-					}
-				}
-			}
-			lastTime = timeSinceStart;
-		}
 	}
 
 	private RigidBodyType convertRigidBodyType(RigidBodyObjectType rigidBodyType) {
@@ -100,5 +34,57 @@ public class RigidBodyPhysicsSystem implements GESystem {
 			default:
 				return RigidBodyType.SPHERE;
 		}
+	}
+
+	@Override
+	public void update(long time, HashSet<RigidBodyObject> components, Registry registry) {
+
+		ArrayList<RigidBody> rigidBodies = new ArrayList<>();
+
+		for (RigidBodyObject rigidBodyObject : components) {
+
+			// get parent transform
+			if (rigidBodyObject.getParent() != null && rigidBodyObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
+
+				TransformObject transformObject = (TransformObject) rigidBodyObject.getParent();
+
+				rigidBodies.add(new RigidBody(
+						rigidBodyObject.getUuid(),
+						rigidBodyObject.getMass(),
+						rigidBodyObject.getDimensions(),
+						transformObject.getPosition().toVecd(),
+						transformObject.getRotation().toQuatD(),
+						rigidBodyObject.getLinearMomentum(),
+						rigidBodyObject.getAngularMomentum(),
+						convertRigidBodyType(rigidBodyObject.getRigidBodyType())
+				));
+
+			}
+		}
+
+		HashMap<UUID, RigidBody> rigidBodiesSimulated = rbSim.iterate(0.02, rigidBodies);
+
+		for (RigidBodyObject rigidBodyObject : components) {
+			RigidBody rigidBody = rigidBodiesSimulated.get(rigidBodyObject.getUuid());
+			rigidBodyObject.getUpdater()
+					.setAngularMomentum(rigidBody.getAngularMomentum())
+					.setLinearMomentum(rigidBody.getLinearMomentum())
+					.sendUpdate();
+
+			if (rigidBodyObject.getParent() != null && rigidBodyObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
+
+				TransformObject transformObject = (TransformObject) rigidBodyObject.getParent();
+
+				transformObject.getUpdater()
+						.setPosition(rigidBody.getOrigin().toVec3f())
+						.setRotation(rigidBody.getRotation().toQuatF())
+						.sendUpdate();
+			}
+		}
+	}
+
+	@Override
+	public ComponentType getTypeSystemUpdates() {
+		return ComponentType.RIGIDBODY;
 	}
 }
