@@ -1,135 +1,104 @@
 package com.nick.wood.game_engine.systems.control;
 
-import com.nick.wood.game_engine.model.game_objects.TransformObject;
+import com.nick.wood.game_engine.gcs_model.gcs.Registry;
+import com.nick.wood.game_engine.gcs_model.generated.components.ControllableObject;
+import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
 import com.nick.wood.game_engine.model.input.ControllerState;
 import com.nick.wood.maths.objects.QuaternionF;
 import com.nick.wood.maths.objects.vector.Vec3f;
 
-public class DirectTransformController implements Control {
+import java.util.HashMap;
+import java.util.Optional;
 
-	private TransformObject transformObject;
-	private final boolean enableLook;
-	private final boolean enableMove;
-	private float sensitivity;
-	private float speed;
+public class DirectTransformController {
+
+	private final ControllerState controllerState;
 	private KeyMapping keyMapping = new KeyMapping();
+	private HashMap<String, Vec3f> translationVectorMap = new HashMap<>();
 
-	public DirectTransformController(TransformObject transformObject, boolean enableLook, boolean enableMove, float sensitivity, float speed) {
-		this.transformObject = transformObject;
-		this.enableLook = enableLook;
-		this.enableMove = enableMove;
-		this.sensitivity = sensitivity;
-		this.speed = speed;
+	public DirectTransformController(ControllerState controllerState) {
+		this.controllerState = controllerState;
+		translationVectorMap.put("leftLinear", Vec3f.X.neg());
+		translationVectorMap.put("rightLinear", Vec3f.X);
+		translationVectorMap.put("forwardLinear", Vec3f.Z.neg());
+		translationVectorMap.put("backLinear", Vec3f.Z);
+		translationVectorMap.put("upLinear", Vec3f.Y);
+		translationVectorMap.put("downLinear", Vec3f.Y.neg());
 	}
 
 	public void changeDefaultKeyMapping(KeyMapping keyMapping) {
 		this.keyMapping = keyMapping;
 	}
 
-	public void update(ControllerState controllerState) {
+	public void update(ControllableObject controllableObject, TransformObject transformObject, Registry registry) {
 		if (controllerState != null) {
 
-			// W
-			if (controllerState.getKeys()[keyMapping.getForward()]) {
-				forwardLinear();
+			TransformObject.TransformUpdater updater = transformObject.getUpdater();
+
+			boolean sendNeeded = false;
+
+			if (controllableObject.getEnableMove()) {
+				Vec3f impulse = Vec3f.ZERO;
+
+				// W
+				if (controllerState.getKeys()[keyMapping.getForward()]) {
+					impulse = impulse.add(translationVectorMap.get("forwardLinear"));
+				}
+				// A
+				if (controllerState.getKeys()[keyMapping.getLeft()]) {
+					impulse = impulse.add(translationVectorMap.get("leftLinear"));
+				}
+				// S
+				if (controllerState.getKeys()[keyMapping.getBack()]) {
+					impulse = impulse.add(translationVectorMap.get("backLinear"));
+				}
+				// D
+				if (controllerState.getKeys()[keyMapping.getRight()]) {
+					impulse = impulse.add(translationVectorMap.get("rightLinear"));
+				}
+				// Q
+				if (controllerState.getKeys()[keyMapping.getUp()]) {
+					impulse = impulse.add(translationVectorMap.get("upLinear"));
+				}
+				// E
+				if (controllerState.getKeys()[keyMapping.getDown()]) {
+					impulse = impulse.add(translationVectorMap.get("downLinear"));
+				}
+
+				if (impulse != Vec3f.ZERO){
+					updater.setPosition(calculateTranslate(transformObject, impulse.normalise().scale(controllableObject.getSpeed())));
+					sendNeeded = true;
+				}
 			}
-			// A
-			if (controllerState.getKeys()[keyMapping.getLeft()]) {
-				leftLinear();
+
+			if (controllableObject.getEnableLook() && (Math.abs(controllerState.getMouseDelX()) > 0 || Math.abs(controllerState.getMouseDelY()) > 0)) {
+				updater.setRotation(mouseMove(controllerState.getMouseDelX(), controllerState.getMouseDelY(), controllableObject.getSensitivity(), transformObject));
+				controllerState.setMouseDelX(0);
+				controllerState.setMouseDelY(0);
+				sendNeeded = true;
 			}
-			// S
-			if (controllerState.getKeys()[keyMapping.getBack()]) {
-				backLinear();
+
+			if (sendNeeded) {
+				updater.sendUpdate();
 			}
-			// D
-			if (controllerState.getKeys()[keyMapping.getRight()]) {
-				rightLinear();
-			}
-			// Q
-			if (controllerState.getKeys()[keyMapping.getUp()]) {
-				upLinear();
-			}
-			// E
-			if (controllerState.getKeys()[keyMapping.getDown()]) {
-				downLinear();
-			}
-			// mouse movement
-			mouseMove(controllerState.getMouseDelX(), controllerState.getMouseDelY());
-			controllerState.setMouseDelX(0);
-			controllerState.setMouseDelY(0);
 		}
 	}
 
 	public void reset() {
 	}
 
-	public void mouseMove(double dx, double dy) {
-		if (enableLook) {
-			QuaternionF rotationX = QuaternionF.RotationZ((float) -dx * sensitivity);
-			QuaternionF rotationZ = QuaternionF.RotationX((float) -dy * sensitivity);
-			// x axis rotation in local frame
-			QuaternionF multiplyGlobalAxisX = rotationX.multiply(transformObject.getTransform().getRotation());
-			// y axis rotation in globals frame
-			QuaternionF multiplyGlobalAxisZ = transformObject.getTransform().getRotation().multiply(rotationZ);
-			transformObject.getTransform().setRotation(multiplyGlobalAxisX.add(multiplyGlobalAxisZ).normalise());
-		}
+	public QuaternionF mouseMove(double dx, double dy, float sensitivity, TransformObject transformObject) {
+		QuaternionF rotationX = QuaternionF.RotationZ((float) -dx * sensitivity);
+		QuaternionF rotationZ = QuaternionF.RotationX((float) -dy * sensitivity);
+		// x axis rotation in local frame
+		QuaternionF multiplyGlobalAxisX = rotationX.multiply(transformObject.getRotation());
+		// y axis rotation in globals frame
+		QuaternionF multiplyGlobalAxisZ = transformObject.getRotation().multiply(rotationZ);
+		return multiplyGlobalAxisX.add(multiplyGlobalAxisZ).normalise();
 	}
 
-	public void leftLinear() {
-			transformObject.getTransform().setPosition(
-					transformObject.getTransform().getPosition()
-							.add(transformObject.getTransform().getRotation().rotateVector(Vec3f.X.scale(-speed)).toVec3f()));
-	}
-
-	public void rightLinear() {
-		transformObject.getTransform().setPosition(
-				transformObject.getTransform().getPosition()
-						.add(transformObject.getTransform().getRotation().rotateVector(Vec3f.X.scale(speed)).toVec3f()));
-	}
-
-	public void forwardLinear() {
-		transformObject.getTransform().setPosition(
-				transformObject.getTransform().getPosition()
-						.add(transformObject.getTransform().getRotation().rotateVector(Vec3f.Z.scale(-speed)).toVec3f()));
-	}
-
-	public void backLinear() {
-		transformObject.getTransform().setPosition(
-				transformObject.getTransform().getPosition()
-						.add(transformObject.getTransform().getRotation().rotateVector(Vec3f.Z.scale(speed)).toVec3f()));
-	}
-
-	public void upLinear() {
-		transformObject.getTransform().setPosition(
-				transformObject.getTransform().getPosition()
-						.add(transformObject.getTransform().getRotation().rotateVector(Vec3f.Y.scale(speed)).toVec3f()));
-	}
-
-	public void downLinear() {
-		transformObject.getTransform().setPosition(
-				transformObject.getTransform().getPosition()
-						.add(transformObject.getTransform().getRotation().rotateVector(Vec3f.Y.scale(-speed)).toVec3f()));
-	}
-
-	public void leftRoll() {
-	}
-
-	public void rightRoll() {
-	}
-
-	public void upPitch() {
-	}
-
-	public void downPitch() {
-	}
-
-	public void leftYaw() {
-	}
-
-	public void rightYaw() {
-	}
-
-	public void action() {
+	public Vec3f calculateTranslate(TransformObject transformObject, Vec3f translationVector) {
+		return transformObject.getPosition().add(transformObject.getRotation().rotateVector(translationVector).toVec3f());
 	}
 
 }
