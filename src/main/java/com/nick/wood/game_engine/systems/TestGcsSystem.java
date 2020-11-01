@@ -31,6 +31,11 @@ public class TestGcsSystem implements GcsSystem<TransformObject> {
 			if (timeStep % 100 == 50 && transformObject.getName().equals("hello")) {
 				transformObject.getUpdater().delete();
 			}
+			if (transformObject.getChildren().stream().noneMatch(to -> to.getComponentType().equals(ComponentType.CAMERA))) {
+				transformObject.getUpdater()
+						.setPosition(transformObject.getPosition().add(new Vec3f(0.1f, 0.1f, 0)))
+						.sendUpdate();
+			}
 		}
 
 
