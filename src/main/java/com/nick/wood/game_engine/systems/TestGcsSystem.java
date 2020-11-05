@@ -16,26 +16,21 @@ import java.util.UUID;
 
 public class TestGcsSystem implements GcsSystem<TransformObject> {
 
+	private final QuaternionF rotation = QuaternionF.RotationX(0.1f);
 
 	@Override
 	public void update(long timeStep, HashSet<TransformObject> transformComponents, Registry registry) {
 
-		TransformObject newTransformObject = null;
-		if (timeStep % 100 == 0) {
-			newTransformObject = new TransformObject(registry, "hello", Vec3f.ONE, new Vec3f(0, timeStep/5, 0), QuaternionF.Identity);
-			GeometryObject geometryObject = new GeometryObject(registry, "geometryhello", Matrix4f.Identity, UUID.randomUUID(), "DEFAULT");
-			geometryObject.getUpdater().setParent(newTransformObject).sendUpdate();
-		}
+		if (timeStep % 100 == 99) {
 
-		for (TransformObject transformObject : transformComponents) {
-			if (timeStep % 100 == 50 && transformObject.getName().equals("hello")) {
-				transformObject.getUpdater().delete();
+			for (TransformObject transformObject : transformComponents) {
+				if (transformObject.getChildren().stream().noneMatch(to -> to.getComponentType().equals(ComponentType.CAMERA))) {
+					transformObject.getUpdater()
+							.setRotation(transformObject.getRotation().multiply(rotation))
+							.sendUpdate();
+				}
 			}
-			if (transformObject.getChildren().stream().noneMatch(to -> to.getComponentType().equals(ComponentType.CAMERA))) {
-				transformObject.getUpdater()
-						.setPosition(transformObject.getPosition().add(new Vec3f(0.1f, 0.1f, 0)))
-						.sendUpdate();
-			}
+
 		}
 
 
