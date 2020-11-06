@@ -21,19 +21,13 @@ public class TestGcsSystem implements GcsSystem<TransformObject> {
 	@Override
 	public void update(long timeStep, HashSet<TransformObject> transformComponents, Registry registry) {
 
-		if (timeStep % 100 == 99) {
-
-			for (TransformObject transformObject : transformComponents) {
-				if (transformObject.getChildren().stream().noneMatch(to -> to.getComponentType().equals(ComponentType.CAMERA))) {
-					transformObject.getUpdater()
-							.setRotation(transformObject.getRotation().multiply(rotation))
-							.sendUpdate();
-				}
+		for (TransformObject transformObject : transformComponents) {
+			if (transformObject.getChildren().stream().noneMatch(to -> to.getComponentType().equals(ComponentType.CAMERA))) {
+				transformObject.getUpdater()
+						.setRotation(transformObject.getRotation().multiply(rotation))
+						.sendUpdate();
 			}
-
 		}
-
-
 
 	}
 
