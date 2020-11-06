@@ -43,7 +43,7 @@ public class InputSystem implements GcsSystem<ControllableObject> {
 
 			if (controllableObject.getParent() != null && controllableObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
 				TransformObject transformObject = (TransformObject) controllableObject.getParent();
-				directTransformController.update(controllableObject, transformObject, registry);
+				directTransformController.update(controllableObject, transformObject);
 			}
 
 		}

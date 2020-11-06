@@ -1,117 +1,104 @@
 package com.nick.wood.game_engine.systems.generation;
 
-import com.nick.wood.game_engine.model.game_objects.*;
-import com.nick.wood.game_engine.model.types.GameObjectType;
-import com.nick.wood.game_engine.model.utils.GameObjectUtils;
-import com.nick.wood.game_engine.systems.GESystem;
+import com.nick.wood.game_engine.gcs_model.gcs.Component;
+import com.nick.wood.game_engine.gcs_model.gcs.Registry;
+import com.nick.wood.game_engine.gcs_model.generated.components.*;
+import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
 import com.nick.wood.maths.noise.Perlin2Df;
-import com.nick.wood.maths.objects.srt.Transform;
-import com.nick.wood.maths.objects.srt.TransformBuilder;
+import com.nick.wood.maths.objects.QuaternionF;
 import com.nick.wood.maths.objects.vector.Vec2i;
 import com.nick.wood.maths.objects.vector.Vec3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
 
-public class TerrainGeneration implements GESystem {
+/**
+ * has to go underneath object you want it to generate around
+ */
+public class TerrainGeneration implements GcsSystem<TerrainGenerationObject> {
 
-	private final ArrayList<Vec2i> loadedChunkIndices = new ArrayList<>();
-	private final ConcurrentHashMap<Vec2i, GameObject> chunkIndexSceneGraphHashMap = new ConcurrentHashMap<>();
-	private final long steps;
+	private final ProceduralGeneration proceduralGeneration = new ProceduralGeneration();
+	// todo hate this
+	private final Perlin2Df[] perlinNoise = new Perlin2Df[]{
+			new Perlin2Df(5000, 50),
+			new Perlin2Df(5000, 50),
+			new Perlin2Df(5000, 50),
+			new Perlin2Df(5000, 50),
+			new Perlin2Df(5000, 50)
+	};
 
-	public TerrainGeneration(long steps) {
-		this.steps = steps;
-	}
+	@Override
+	public void update(long time, HashSet<TerrainGenerationObject> terrainGenerationObjects, Registry registry) {
 
-	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
+		for (TerrainGenerationObject terrainGenerationObject : terrainGenerationObjects) {
 
-		if (timeSinceStart % steps == 0) {
+			// center position of terrain generation
+			Vec3f startingPos = Vec3f.ZERO;
 
-			// first find the main camera. There should only be one main camera in any of the scenes
-			TransformObject cameraTransform = GameObjectUtils.FindMainCameraTransform(layeredGameObjectsMap);
+			// get parent object. if null, then it is just generated at 0, 0, 0 and will not generate anymore
+			Component parent = terrainGenerationObject.getParent();
+			if (parent != null) {
+				startingPos = parent.getGlobalTransform().getTranslation();
+			}
 
-			if (cameraTransform != null) {
+			// now work out all the indices of terrain generation that should be created using the starting position and the
+			// terrain generation object properties
+			int startingXIndex = (int) (startingPos.getX() / (double) (terrainGenerationObject.getChunkSize() * terrainGenerationObject.getCellSpace()));
+			int startingYIndex = (int) (startingPos.getY() / (double) (terrainGenerationObject.getChunkSize() * terrainGenerationObject.getCellSpace()));
 
-				for (ArrayList<GameObject> gameObjects : layeredGameObjectsMap.values()) {
-
-					ArrayList<GameObject> foundGameObjects = GameObjectUtils.FindGameObjectsByType(gameObjects, GameObjectType.TERRAIN);
-
-					for (GameObject foundGameObject : foundGameObjects) {
-
-						TerrainGenerationObject terrainGenerationObject = (TerrainGenerationObject) foundGameObject;
-
-						// get the index of the player position
-						int xIndex = (int) (cameraTransform.getTransform().getPosition().getX() / (double) (terrainGenerationObject.getChunkSize() * terrainGenerationObject.getCellSpace()));
-						int yIndex = (int) (cameraTransform.getTransform().getPosition().getY() / (double) (terrainGenerationObject.getChunkSize() * terrainGenerationObject.getCellSpace()));
-
-						Vec2i playerChunk = new Vec2i(xIndex, yIndex);
-
-						// use this position to create the tiles all around the player
-						// load all 16 chunks around it
-						for (int x = xIndex - terrainGenerationObject.getLoadingClippingDistance(); x <= xIndex + terrainGenerationObject.getLoadingClippingDistance(); x++) {
-							for (int y = yIndex - terrainGenerationObject.getLoadingClippingDistance(); y <= yIndex + terrainGenerationObject.getLoadingClippingDistance(); y++) {
-
-								Vec2i chunkIndex = new Vec2i(x, y);
-
-								// see if the chunk hasn't already been loaded
-								if (!loadedChunkIndices.contains(chunkIndex)) {
-									// add chunk to new list
-									// and load it
-									GameObject gameObject = createChunk(chunkIndex,
-											terrainGenerationObject.getChunkSize(),
-											terrainGenerationObject.getPerlin2Ds(),
-											terrainGenerationObject.getCellSpace(),
-											terrainGenerationObject.getAmplitude(),
-											terrainGenerationObject.getTerrainTextureGameObjects()
-									);
-									chunkIndexSceneGraphHashMap.put(chunkIndex, gameObject);
-									loadedChunkIndices.add(chunkIndex);
-									terrainGenerationObject.getGameObjectData().getUpdater().addChild(gameObject);
-
-								}
-							}
-						}
-
-						// see if the chunk hasn't already been loaded
-						Iterator<Vec2i> iterator = loadedChunkIndices.iterator();
-						while (iterator.hasNext()) {
-							Vec2i next = iterator.next();
-							int dist = next.distance2AwayFrom(playerChunk);
-							// if chunk is within visual range, set render to true
-							if (dist < terrainGenerationObject.getVisualClippingDistance2()) {
-								chunkIndexSceneGraphHashMap.get(next).getGameObjectData().showAll();
-							} else if (dist < terrainGenerationObject.getLoadingClippingDistance2()) {
-								chunkIndexSceneGraphHashMap.get(next).getGameObjectData().hideAll();
-							} else {
-								destroyChunk(next, terrainGenerationObject);
-								iterator.remove();
-							}
-						}
-
-					}
-
+			// create a list of valid chunk index's
+			ArrayList<Vec2i> validIndices = new ArrayList<>();
+			for (int x = startingXIndex - terrainGenerationObject.getGenerationRange(); x <= startingXIndex + terrainGenerationObject.getGenerationRange(); x++) {
+				for (int y = startingYIndex - terrainGenerationObject.getGenerationRange(); y <= startingYIndex + terrainGenerationObject.getGenerationRange(); y++) {
+					validIndices.add(new Vec2i(x, y));
 				}
+			}
 
+			// get all the terrain chunks underneath this object
+			// and get a map of currently generated terrain chunk indices and chunk
+			HashMap<Vec2i, TerrainChunkObject> indices = new HashMap<>();
+			for (Component child : terrainGenerationObject.getChildren()) {
+				if (child.getComponentType().equals(ComponentType.TERRAINCHUNK)) {
+					TerrainChunkObject chunk = (TerrainChunkObject) child;
+					// if chunk has a none valid index, delete it
+					if (!validIndices.contains(chunk.getIndex())) {
+						child.getUpdater().delete();
+					}
+					indices.put(chunk.getIndex(), chunk);
+				}
+			}
+
+			// loop through all valid indices
+			for (Vec2i validIndex : validIndices) {
+				// if valid index is not in current index list, make a new terrain chunk
+				if (!indices.containsKey(validIndex)) {
+					createChunk(registry,
+							validIndex,
+							terrainGenerationObject.getChunkSize(),
+							perlinNoise,
+							terrainGenerationObject.getCellSpace(),
+							terrainGenerationObject.getAmplitude(),
+							terrainGenerationObject);
+				}
+				// if valid index is in current index list, do nothing
 			}
 		}
-
 	}
 
-	private void destroyChunk(Vec2i chunkIndex, GameObject parent) {
-		parent.getGameObjectData().getUpdater().removeChild(chunkIndexSceneGraphHashMap.get(chunkIndex));
-		chunkIndexSceneGraphHashMap.remove(chunkIndex);
+	@Override
+	public ComponentType getTypeSystemUpdates() {
+		return ComponentType.TERRAINGENERATION;
 	}
 
-	private GameObject createChunk(Vec2i chunkIndex,
-	                               int chunkSize,
-	                               Perlin2Df[] perlin2Ds,
-	                               int cellSpace,
-	                               int amplitude,
-	                               ArrayList<TerrainTextureGameObject> terrainTextureGameObjects) {
+	private void createChunk(Registry registry,
+	                         Vec2i chunkIndex,
+	                         int chunkSize,
+	                         Perlin2Df[] perlin2Ds,
+	                         int cellSpace,
+	                         int amplitude,
+	                         TerrainGenerationObject terrainGenerationObject) {
 
-		ProceduralGeneration proceduralGeneration = new ProceduralGeneration();
 		float[][] grid = proceduralGeneration.generateHeightMapChunk(
 				chunkSize + 1,
 				0.7,
@@ -121,22 +108,17 @@ public class TerrainGeneration implements GESystem {
 				amplitude
 		);
 
-
-		Transform transform = new TransformBuilder()
-				.setPosition(new Vec3f(chunkIndex.getX() * chunkSize * cellSpace, chunkIndex.getY() * chunkSize * cellSpace, 0)).build();
-
-		TransformObject transformObject = new TransformObject(transform);
-		transformObject.getGameObjectData().hideAll();
-
 		TerrainChunkObject terrainChunkObject = new TerrainChunkObject(
-				chunkIndex.toString(),
-				grid,
-				terrainTextureGameObjects,
-				cellSpace
+				registry,
+				chunkIndex.toString() + "terrain_chunk",
+				new Vec3f(chunkIndex.getX() * chunkSize * cellSpace, chunkIndex.getY() * chunkSize * cellSpace, 0),
+				chunkIndex,
+				cellSpace,
+				grid
 		);
-		transformObject.getGameObjectData().attachGameObjectNode(terrainChunkObject);
 
-		return transformObject;
+		terrainChunkObject.getUpdater().setParent(terrainGenerationObject).sendUpdate();
+
+
 	}
-
 }

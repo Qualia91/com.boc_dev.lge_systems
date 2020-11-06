@@ -30,7 +30,7 @@ public class DirectTransformController {
 		this.keyMapping = keyMapping;
 	}
 
-	public void update(ControllableObject controllableObject, TransformObject transformObject, Registry registry) {
+	public void update(ControllableObject controllableObject, TransformObject transformObject) {
 		if (controllerState != null) {
 
 			TransformObject.TransformUpdater updater = transformObject.getUpdater();
