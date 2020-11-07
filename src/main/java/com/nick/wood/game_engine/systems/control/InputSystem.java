@@ -1,15 +1,11 @@
 package com.nick.wood.game_engine.systems.control;
 
 import com.nick.wood.game_engine.event_bus.busses.GameBus;
-import com.nick.wood.game_engine.gcs_model.gcs.Component;
 import com.nick.wood.game_engine.gcs_model.gcs.Registry;
 import com.nick.wood.game_engine.gcs_model.generated.components.ComponentType;
 import com.nick.wood.game_engine.gcs_model.generated.components.ControllableObject;
 import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
 import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
-import com.nick.wood.game_engine.model.game_objects.GameObject;
-import com.nick.wood.game_engine.model.input.ControllerState;
-import com.nick.wood.game_engine.systems.GESystem;
 
 import java.util.ArrayList;
 import java.util.HashMap;

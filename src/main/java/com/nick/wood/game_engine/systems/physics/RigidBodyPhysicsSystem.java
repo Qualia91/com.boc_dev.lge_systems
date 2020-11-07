@@ -6,8 +6,6 @@ import com.nick.wood.game_engine.gcs_model.generated.components.RigidBodyObject;
 import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
 import com.nick.wood.game_engine.gcs_model.generated.enums.RigidBodyObjectType;
 import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
-import com.nick.wood.game_engine.systems.GESystem;
-import com.nick.wood.maths.objects.vector.Vec3f;
 import com.nick.wood.physics_library.rigid_body_dynamics_verbose.RigidBody;
 import com.nick.wood.physics_library.rigid_body_dynamics_verbose.RigidBodyType;
 import com.nick.wood.physics_library.rigid_body_dynamics_verbose.Simulation;
