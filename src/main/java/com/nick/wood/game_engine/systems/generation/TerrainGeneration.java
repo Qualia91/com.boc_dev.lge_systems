@@ -111,10 +111,10 @@ public class TerrainGeneration implements GcsSystem<TerrainGenerationObject> {
 		TerrainChunkObject terrainChunkObject = new TerrainChunkObject(
 				registry,
 				chunkIndex.toString() + "terrain_chunk",
-				new Vec3f(chunkIndex.getX() * chunkSize * cellSpace, chunkIndex.getY() * chunkSize * cellSpace, 0),
-				chunkIndex,
 				cellSpace,
-				grid
+				grid,
+				chunkIndex,
+				new Vec3f(chunkIndex.getX() * chunkSize * cellSpace, chunkIndex.getY() * chunkSize * cellSpace, 0)
 		);
 
 		terrainChunkObject.getUpdater().setParent(terrainGenerationObject).sendUpdate();

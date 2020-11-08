@@ -35,9 +35,9 @@ public class MeshAddSystem implements GcsSystem<MaterialObject> {
 					TransformObject newTransformObject = new TransformObject(
 							registry,
 							"TransformObject" + timeStep,
-							build.getScale(),
 							build.getPosition(),
-							build.getRotation());
+							build.getRotation(),
+							build.getScale());
 
 					GeometryObject newGeometryObject = new GeometryObject(
 							registry,
