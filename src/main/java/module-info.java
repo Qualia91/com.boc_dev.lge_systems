@@ -6,6 +6,6 @@ module com.nick.wood.game.engine.systems {
 	exports com.nick.wood.game_engine.systems.boids;
 	requires com.nick.wood.game_engine.event_bus;
 	requires com.nick.wood.maths;
-	requires com.nick.wood.rigid_body_dynamics;
-	requires com.nick.wood.game_engine.gcs_model;
+	requires com.nick.wood.physics_library;
+    requires com.nick.wood.game_engine.gcs_model;
 }

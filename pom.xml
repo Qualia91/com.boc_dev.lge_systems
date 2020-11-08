@@ -10,12 +10,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.nick.wood.game_engine.gcs_model</groupId>
-            <artifactId>com.nick.wood.game_engine.gcs_model</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.nick.wood.maths</groupId>
             <artifactId>com.nick.wood.maths</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -42,18 +36,6 @@
         <dependency>
             <groupId>com.nick.wood.physics_library</groupId>
             <artifactId>com.nick.wood.physics_library</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nick.wood.game_engine.gcs_model</groupId>
-            <artifactId>com.nick.wood.game_engine.gcs_model</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nick.wood.game_engine.gcs_model</groupId>
-            <artifactId>com.nick.wood.game_engine.gcs_model</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
