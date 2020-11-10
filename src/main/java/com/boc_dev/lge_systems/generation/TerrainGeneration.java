@@ -1,13 +1,12 @@
-package com.nick.wood.game_engine.systems.generation;
+package com.boc_dev.lge_systems.generation;
 
-import com.nick.wood.game_engine.gcs_model.gcs.Component;
-import com.nick.wood.game_engine.gcs_model.gcs.Registry;
-import com.nick.wood.game_engine.gcs_model.generated.components.*;
-import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
-import com.nick.wood.maths.noise.Perlin2Df;
-import com.nick.wood.maths.objects.QuaternionF;
-import com.nick.wood.maths.objects.vector.Vec2i;
-import com.nick.wood.maths.objects.vector.Vec3f;
+import com.boc_dev.lge_model.gcs.Component;
+import com.boc_dev.lge_model.gcs.Registry;
+import com.boc_dev.lge_model.generated.components.*;
+import com.boc_dev.lge_model.systems.GcsSystem;
+import com.boc_dev.maths.noise.Perlin2Df;
+import com.boc_dev.maths.objects.vector.Vec2i;
+import com.boc_dev.maths.objects.vector.Vec3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;

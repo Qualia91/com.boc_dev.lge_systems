@@ -1,4 +1,4 @@
-package com.nick.wood.game_engine.systems.control;
+package com.boc_dev.lge_systems.control;
 
 public class KeyMapping {
 	private int up;

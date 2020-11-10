@@ -1,16 +1,16 @@
-package com.nick.wood.game_engine.systems;
+package com.boc_dev.lge_systems;
 
-import com.nick.wood.game_engine.gcs_model.gcs.Registry;
-import com.nick.wood.game_engine.gcs_model.generated.components.ComponentType;
-import com.nick.wood.game_engine.gcs_model.generated.components.GeometryObject;
-import com.nick.wood.game_engine.gcs_model.generated.components.MaterialObject;
-import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
-import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
-import com.nick.wood.maths.objects.QuaternionF;
-import com.nick.wood.maths.objects.matrix.Matrix4f;
-import com.nick.wood.maths.objects.srt.Transform;
-import com.nick.wood.maths.objects.srt.TransformBuilder;
-import com.nick.wood.maths.objects.vector.Vec3f;
+import com.boc_dev.lge_model.gcs.Registry;
+import com.boc_dev.lge_model.generated.components.ComponentType;
+import com.boc_dev.lge_model.generated.components.GeometryObject;
+import com.boc_dev.lge_model.generated.components.MaterialObject;
+import com.boc_dev.lge_model.generated.components.TransformObject;
+import com.boc_dev.lge_model.systems.GcsSystem;
+import com.boc_dev.maths.objects.QuaternionF;
+import com.boc_dev.maths.objects.matrix.Matrix4f;
+import com.boc_dev.maths.objects.srt.Transform;
+import com.boc_dev.maths.objects.srt.TransformBuilder;
+import com.boc_dev.maths.objects.vector.Vec3f;
 
 import java.util.HashSet;
 import java.util.UUID;

@@ -1,12 +1,12 @@
-package com.nick.wood.game_engine.systems.control;
+package com.boc_dev.lge_systems.control;
 
-import com.nick.wood.game_engine.event_bus.event_data.MoveEventData;
-import com.nick.wood.game_engine.event_bus.event_data.PressEventData;
-import com.nick.wood.game_engine.event_bus.event_types.ManagementEventType;
-import com.nick.wood.game_engine.event_bus.events.ControlEvent;
-import com.nick.wood.game_engine.event_bus.events.ManagementEvent;
-import com.nick.wood.game_engine.event_bus.interfaces.Event;
-import com.nick.wood.game_engine.event_bus.interfaces.Subscribable;
+import com.boc_dev.event_bus.event_data.MoveEventData;
+import com.boc_dev.event_bus.event_data.PressEventData;
+import com.boc_dev.event_bus.event_types.ManagementEventType;
+import com.boc_dev.event_bus.events.ControlEvent;
+import com.boc_dev.event_bus.events.ManagementEvent;
+import com.boc_dev.event_bus.interfaces.Event;
+import com.boc_dev.event_bus.interfaces.Subscribable;
 
 import java.util.ArrayList;
 import java.util.HashSet;

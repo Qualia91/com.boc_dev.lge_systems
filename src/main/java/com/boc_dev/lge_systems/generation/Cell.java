@@ -1,6 +1,6 @@
-package com.nick.wood.game_engine.systems.generation;
+package com.boc_dev.lge_systems.generation;
 
-import com.nick.wood.maths.objects.vector.Vec2i;
+import com.boc_dev.maths.objects.vector.Vec2i;
 
 import java.util.ArrayList;
 

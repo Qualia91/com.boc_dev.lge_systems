@@ -1,13 +1,11 @@
-package com.nick.wood.game_engine.systems.control;
+package com.boc_dev.lge_systems.control;
 
-import com.nick.wood.game_engine.gcs_model.gcs.Registry;
-import com.nick.wood.game_engine.gcs_model.generated.components.ControllableObject;
-import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
-import com.nick.wood.maths.objects.QuaternionF;
-import com.nick.wood.maths.objects.vector.Vec3f;
+import com.boc_dev.lge_model.generated.components.ControllableObject;
+import com.boc_dev.lge_model.generated.components.TransformObject;
+import com.boc_dev.maths.objects.QuaternionF;
+import com.boc_dev.maths.objects.vector.Vec3f;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 public class DirectTransformController {
 

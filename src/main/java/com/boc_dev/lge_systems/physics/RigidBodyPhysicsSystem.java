@@ -1,14 +1,14 @@
-package com.nick.wood.game_engine.systems.physics;
+package com.boc_dev.lge_systems.physics;
 
-import com.nick.wood.game_engine.gcs_model.gcs.Registry;
-import com.nick.wood.game_engine.gcs_model.generated.components.ComponentType;
-import com.nick.wood.game_engine.gcs_model.generated.components.RigidBodyObject;
-import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
-import com.nick.wood.game_engine.gcs_model.generated.enums.RigidBodyObjectType;
-import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
-import com.nick.wood.physics_library.rigid_body_dynamics_verbose.RigidBody;
-import com.nick.wood.physics_library.rigid_body_dynamics_verbose.RigidBodyType;
-import com.nick.wood.physics_library.rigid_body_dynamics_verbose.Simulation;
+import com.boc_dev.lge_model.gcs.Registry;
+import com.boc_dev.lge_model.generated.components.ComponentType;
+import com.boc_dev.lge_model.generated.components.RigidBodyObject;
+import com.boc_dev.lge_model.generated.components.TransformObject;
+import com.boc_dev.lge_model.generated.enums.RigidBodyObjectType;
+import com.boc_dev.lge_model.systems.GcsSystem;
+import com.boc_dev.physics_library.rigid_body_dynamics_verbose.RigidBody;
+import com.boc_dev.physics_library.rigid_body_dynamics_verbose.RigidBodyType;
+import com.boc_dev.physics_library.rigid_body_dynamics_verbose.Simulation;
 
 import java.util.ArrayList;
 import java.util.HashMap;

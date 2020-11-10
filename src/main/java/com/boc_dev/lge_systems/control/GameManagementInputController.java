@@ -1,9 +1,9 @@
-package com.nick.wood.game_engine.systems.control;
+package com.boc_dev.lge_systems.control;
 
-import com.nick.wood.game_engine.event_bus.event_data.ManagementEventData;
-import com.nick.wood.game_engine.event_bus.event_types.ManagementEventType;
-import com.nick.wood.game_engine.event_bus.events.ManagementEvent;
-import com.nick.wood.game_engine.event_bus.interfaces.Bus;
+import com.boc_dev.event_bus.event_data.ManagementEventData;
+import com.boc_dev.event_bus.event_types.ManagementEventType;
+import com.boc_dev.event_bus.events.ManagementEvent;
+import com.boc_dev.event_bus.interfaces.Bus;
 
 public class GameManagementInputController implements Control {
 

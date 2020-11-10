@@ -1,14 +1,13 @@
-package com.nick.wood.game_engine.systems.control;
+package com.boc_dev.lge_systems.control;
 
-import com.nick.wood.game_engine.event_bus.busses.GameBus;
-import com.nick.wood.game_engine.gcs_model.gcs.Registry;
-import com.nick.wood.game_engine.gcs_model.generated.components.ComponentType;
-import com.nick.wood.game_engine.gcs_model.generated.components.ControllableObject;
-import com.nick.wood.game_engine.gcs_model.generated.components.TransformObject;
-import com.nick.wood.game_engine.gcs_model.systems.GcsSystem;
+import com.boc_dev.event_bus.busses.GameBus;
+import com.boc_dev.lge_model.gcs.Registry;
+import com.boc_dev.lge_model.generated.components.ComponentType;
+import com.boc_dev.lge_model.generated.components.ControllableObject;
+import com.boc_dev.lge_model.generated.components.TransformObject;
+import com.boc_dev.lge_model.systems.GcsSystem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class InputSystem implements GcsSystem<ControllableObject> {

@@ -1,6 +1,6 @@
-package com.nick.wood.game_engine.systems.generation;
+package com.boc_dev.lge_systems.generation;
 
-import com.nick.wood.maths.noise.Perlin2Df;
+import com.boc_dev.maths.noise.Perlin2Df;
 
 import java.util.function.Function;
 

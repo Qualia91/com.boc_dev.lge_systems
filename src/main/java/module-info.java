@@ -1,11 +1,11 @@
-module com.nick.wood.game.engine.systems {
-	exports com.nick.wood.game_engine.systems;
-	exports com.nick.wood.game_engine.systems.control;
-	exports com.nick.wood.game_engine.systems.generation;
-	exports com.nick.wood.game_engine.systems.physics;
-	exports com.nick.wood.game_engine.systems.boids;
-	requires com.nick.wood.game_engine.event_bus;
-	requires com.nick.wood.maths;
-	requires com.nick.wood.physics_library;
-    requires com.nick.wood.game_engine.gcs_model;
+module com.boc_dev.lge_systems {
+	exports com.boc_dev.lge_systems;
+	exports com.boc_dev.lge_systems.control;
+	exports com.boc_dev.lge_systems.generation;
+	exports com.boc_dev.lge_systems.physics;
+	exports com.boc_dev.lge_systems.boids;
+	requires com.boc_dev.event_bus;
+	requires com.boc_dev.maths;
+	requires com.boc_dev.physics_library;
+    requires com.boc_dev.lge_model;
 }
