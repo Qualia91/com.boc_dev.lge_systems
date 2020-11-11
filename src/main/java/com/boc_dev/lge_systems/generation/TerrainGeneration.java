@@ -113,6 +113,7 @@ public class TerrainGeneration implements GcsSystem<TerrainGenerationObject> {
 				cellSpace,
 				grid,
 				chunkIndex,
+				terrainGenerationObject.getMaterialID(),
 				new Vec3f(chunkIndex.getX() * chunkSize * cellSpace, chunkIndex.getY() * chunkSize * cellSpace, 0)
 		);
 
