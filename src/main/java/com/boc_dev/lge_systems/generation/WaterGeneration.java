@@ -1,87 +1,74 @@
-//package com.nick.wood.game_engine.systems.generation;
-//
-//import com.nick.wood.game_engine.model.game_objects.*;
-//import com.nick.wood.game_engine.model.types.GameObjectType;
-//import com.nick.wood.game_engine.model.utils.GameObjectUtils;
-//import com.nick.wood.game_engine.systems.GESystem;
-//import com.nick.wood.maths.objects.srt.Transform;
-//import com.nick.wood.maths.objects.srt.TransformBuilder;
-//import com.nick.wood.maths.objects.vector.Vec3f;
-//
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//
-//public class WaterGeneration implements GESystem {
-//
-//	private final long steps;
-//
-//	public WaterGeneration(long steps) {
-//		this.steps = steps;
-//	}
-//
-//	public void update(HashMap<String, ArrayList<GameObject>> layeredGameObjectsMap, long timeSinceStart) {
-//
-//		if (timeSinceStart % steps == 0) {
-//			// first find the main camera. There should only be one main camera in any of the scenes
-//			TransformObject cameraTransform = GameObjectUtils.FindMainCameraTransform(layeredGameObjectsMap);
-//
-//			if (cameraTransform != null) {
-//
-//				for (ArrayList<GameObject> gameObjects : layeredGameObjectsMap.values()) {
-//
-//					ArrayList<GameObject> foundGameObjects = GameObjectUtils.FindGameObjectsByType(gameObjects, GameObjectType.WATER);
-//
-//					for (GameObject foundGameObject : foundGameObjects) {
-//
-//						WaterGenerationObject waterGenObject = (WaterGenerationObject) foundGameObject;
-//						float halfWidth = waterGenObject.getSize() * waterGenObject.getCellSize() / 2.0f;
-//
-//						// if it has no children, create a transform then a water chunk
-//						if (waterGenObject.getGameObjectData().getChildren().isEmpty()) {
-//
-//							Transform transform = new TransformBuilder()
-//									.setPosition(
-//											new Vec3f(cameraTransform.getTransform().getPosition().getX() - halfWidth,
-//													cameraTransform.getTransform().getPosition().getY() - halfWidth,
-//													0)
-//									)
-//									.build();
-//
-//							TransformObject transformObject = new TransformObject(transform);
-//
-//							WaterChunkObject waterChunkObject = new WaterChunkObject("Water_chunk",
-//									waterGenObject.getWaterTexture(),
-//									waterGenObject.getNormalMap(),
-//									waterGenObject.getSize(),
-//									waterGenObject.getWaterHeight(),
-//									waterGenObject.getCellSize());
-//
-//							waterGenObject.getGameObjectData().getUpdater().addChild(transformObject);
-//							transformObject.getGameObjectData().getUpdater().addChild(waterChunkObject);
-//
-//						} else {
-//
-//							for (GameObject child : waterGenObject.getGameObjectData().getChildren()) {
-//								if (child.getGameObjectData().getType().equals(GameObjectType.TRANSFORM)) {
-//									TransformObject waterTransformObject = (TransformObject) child;
-//									// move chunk under camera
-//									waterTransformObject.setPosition(
-//											new Vec3f(cameraTransform.getTransform().getPosition().getX() - halfWidth,
-//													cameraTransform.getTransform().getPosition().getY() - halfWidth,
-//													0));
-//
-//								}
-//							}
-//
-//						}
-//
-//					}
-//
-//				}
-//
-//			}
-//		}
-//
-//	}
-//
-//}
+package com.boc_dev.lge_systems.generation;
+
+import com.boc_dev.lge_model.gcs.Component;
+import com.boc_dev.lge_model.gcs.Registry;
+import com.boc_dev.lge_model.generated.components.*;
+import com.boc_dev.lge_model.systems.GcsSystem;
+import com.boc_dev.maths.objects.QuaternionF;
+import com.boc_dev.maths.objects.vector.Vec3f;
+
+import java.util.HashSet;
+
+public class WaterGeneration implements GcsSystem<WaterGenerationObject> {
+
+	@Override
+	public void update(long time, HashSet<WaterGenerationObject> components, Registry registry) {
+
+		for (WaterGenerationObject waterGenerationObject : components) {
+
+			// center position of water generation
+			Vec3f startingPos = Vec3f.ZERO;
+
+			// get parent object. if null, then it is just generated at 0, 0, 0 and will not generate anymore
+			Component parent = waterGenerationObject.getParent();
+			if (parent != null) {
+				startingPos = parent.getGlobalTransform().getTranslation();
+			}
+
+			float halfWidth = waterGenerationObject.getChunkSize() * waterGenerationObject.getCellSpace() / 2.0f;
+
+			startingPos = startingPos.subtract(new Vec3f(halfWidth, halfWidth, 0));
+
+			// see if it has a water chunk already
+			for (Component component : waterGenerationObject.getChildren()) {
+				if (component.getComponentType().equals(ComponentType.TRANSFORM)) {
+					for (Component child : component.getChildren()) {
+						if (component.getComponentType().equals(ComponentType.WATERCHUNK)) {
+							TransformObject transformObject = (TransformObject) component;
+							transformObject.getUpdater().setPosition(startingPos).sendUpdate();
+							return;
+						}
+					}
+				}
+			}
+			// if it has made it this far, it has no water chunk under it, so make one like before
+			makeWaterChunk(registry, startingPos, waterGenerationObject);
+		}
+	}
+
+	private void makeWaterChunk(Registry registry, Vec3f startingPos, WaterGenerationObject waterGenerationObject) {
+		TransformObject transformObject = new TransformObject(registry, "water", startingPos, QuaternionF.Identity, Vec3f.ONE);
+
+		float[][] grid = new float[waterGenerationObject.getChunkSize()][waterGenerationObject.getChunkSize()];
+
+		for (int i = 0; i < waterGenerationObject.getChunkSize(); i++) {
+			for (int j = 0; j < waterGenerationObject.getChunkSize(); j++) {
+				grid[i][j] = 0;
+			}
+		}
+
+		WaterChunkObject waterChunkObject = new WaterChunkObject(
+				registry,
+				"Water_chunk" + waterGenerationObject.getUuid(),
+				waterGenerationObject.getCellSpace(),
+				grid);
+
+		waterChunkObject.getUpdater().setParent(transformObject);
+	}
+
+	@Override
+	public ComponentType getTypeSystemUpdates() {
+		return ComponentType.WATERGENERATION;
+	}
+
+}
