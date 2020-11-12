@@ -16,7 +16,7 @@ public class MeshRemoveSystem implements GcsSystem<GeometryObject> {
 	public void update(long timeStep, HashSet<GeometryObject> geometryObjects, Registry registry) {
 
 
-		if (timeStep > 2500) {
+		if (timeStep > 1800) {
 
 			for (GeometryObject geometryObject : geometryObjects) {
 				geometryObject.getParent().getUpdater().delete();

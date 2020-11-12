@@ -22,7 +22,7 @@ public class MeshAddSystem implements GcsSystem<MaterialObject> {
 	@Override
 	public void update(long timeStep, HashSet<MaterialObject> geometryObjects, Registry registry) {
 
-		if (timeStep < 2500) {
+		if (timeStep < 1800) {
 
 			// find any of the materials
 			UUID materialUUID = null;
