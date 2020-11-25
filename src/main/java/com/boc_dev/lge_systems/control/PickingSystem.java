@@ -54,10 +54,9 @@ public class PickingSystem implements GcsSystem<PickableObject>, Subscribable {
 					if (component.getActive() && component.getParent() != null) {
 						Component parent = component.getParent();
 						if (parent.getUuid().equals(pickingResponseEventData.getUuid())) {
-							System.out.println(parent.getName());
 
 							// todo testing
-							//parent.getParent().getUpdater().delete();
+							parent.getParent().getUpdater().delete();
 						}
 					}
 				}
