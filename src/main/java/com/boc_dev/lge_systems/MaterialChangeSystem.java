@@ -31,21 +31,21 @@ public class MaterialChangeSystem implements GcsSystem<MaterialObject> {
 					System.out.println("material1");
 				}
 			}
-		} else if (timeStep == 700) {
+		} else if (timeStep == 750) {
 			for (MaterialObject materialObject : geometryObjects) {
 				if (materialObject.getName().equals("material2")) {
 					materialUUID = materialObject.getUuid();
 					System.out.println("material2");
 				}
 			}
-		} else if (timeStep == 900) {
+		} else if (timeStep == 1000) {
 			for (MaterialObject materialObject : geometryObjects) {
 				if (materialObject.getName().equals("material3")) {
 					materialUUID = materialObject.getUuid();
 					System.out.println("material3");
 				}
 			}
-		} else if (timeStep == 1100) {
+		} else if (timeStep == 1250) {
 			for (MaterialObject materialObject : geometryObjects) {
 				if (materialObject.getName().equals("material4")) {
 					materialUUID = materialObject.getUuid();

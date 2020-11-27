@@ -10,18 +10,20 @@ import com.boc_dev.lge_model.gcs.Registry;
 import com.boc_dev.lge_model.generated.components.ComponentType;
 import com.boc_dev.lge_model.generated.components.GeometryObject;
 import com.boc_dev.lge_model.generated.components.PickableObject;
+import com.boc_dev.lge_model.generated.components.SelectableObject;
 import com.boc_dev.lge_model.systems.GcsSystem;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class PickingSystem implements GcsSystem<PickableObject>, Subscribable {
+public class PickingSystem implements GcsSystem<GeometryObject>, Subscribable {
 
 	private final Set<Class<?>> supports = new HashSet<>();
-	private final ArrayBlockingQueue<PickingResponseEventData> pickingResponseQueue = new ArrayBlockingQueue<>(10);
-	private final ArrayList<PickingResponseEventData> pickingResponseList = new ArrayList<>();
+	private final ArrayBlockingQueue<UUID> pickingResponseQueue = new ArrayBlockingQueue<>(10);
+	private final ArrayList<UUID> pickingResponseList = new ArrayList<>();
 
 	public PickingSystem() {
 		this.supports.add(PickingEvent.class);
@@ -31,7 +33,7 @@ public class PickingSystem implements GcsSystem<PickableObject>, Subscribable {
 	public void handle(Event<?> event) {
 		if (event.getType().equals(PickingEventType.RESPONSE)) {
 			PickingEvent pickingEvent = (PickingEvent) event;
-			pickingResponseQueue.offer((PickingResponseEventData)pickingEvent.getData());
+			pickingResponseQueue.offer(((PickingResponseEventData) pickingEvent.getData()).getUuid());
 		}
 	}
 
@@ -41,34 +43,38 @@ public class PickingSystem implements GcsSystem<PickableObject>, Subscribable {
 	}
 
 	@Override
-	public void update(long time, HashSet<PickableObject> components, Registry registry) {
+	public void update(long time, HashSet<GeometryObject> components, Registry registry) {
 
 		// get picking responses
 		pickingResponseQueue.drainTo(pickingResponseList);
 
-		for (PickingResponseEventData pickingResponseEventData : pickingResponseList) {
-			// see if it is for this layer
-			if (pickingResponseEventData.getSceneLayerName().equals(registry.getLayerName())) {
-				// loop over components and find parent (pickable is child of pickable objects)
-				for (PickableObject component : components) {
-					if (component.getActive() && component.getParent() != null) {
-						Component parent = component.getParent();
-						if (parent.getUuid().equals(pickingResponseEventData.getUuid())) {
+		if (!pickingResponseList.isEmpty()) {
 
-							// todo testing
-							parent.getParent().getUpdater().delete();
+			// loop over components and find parent (pickable is child of pickable objects)
+			for (GeometryObject geometryObject : components) {
+				for (Component child : geometryObject.getChildren()) {
+					if (child.getComponentType().equals(ComponentType.SELECTABLE)) {
+						SelectableObject selectableObject = (SelectableObject) child;
+						if (pickingResponseList.contains(geometryObject.getUuid())) {
+							selectableObject.getUpdater().setSelected(true).sendUpdate();
+						} else if (pickingResponseList.contains(PickingResponseEventData.NO_DATA_SELECTED)) {
+							selectableObject.getUpdater().setSelected(false).sendUpdate();
+						} else {
+							selectableObject.getUpdater().setSelected(false).sendUpdate();
 						}
+						break;
 					}
 				}
-			}
-		}
 
+			}
+
+		}
 
 		pickingResponseList.clear();
 	}
 
 	@Override
 	public ComponentType getTypeSystemUpdates() {
-		return ComponentType.PICKABLE;
+		return ComponentType.GEOMETRY;
 	}
 }
