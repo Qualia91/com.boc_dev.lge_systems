@@ -10,19 +10,19 @@ import com.boc_dev.lge_model.systems.GcsSystem;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class InputSystem implements GcsSystem<ControllableObject> {
+public class DirectInputSystem implements GcsSystem<ControllableObject> {
 
 	private final ArrayList<Control> controls = new ArrayList<>();
 	private final ControllerState controllerState;
-	private final ImpulseTransformController impulseTransformController;
+	private final DirectTransformController directTransformController;
 
-	public InputSystem(ControllerState controllerState, GameBus gameBus) {
+	public DirectInputSystem(ControllerState controllerState, GameBus gameBus) {
 		this.controllerState = controllerState;
 
 		GameManagementInputController gameManagementInputController = new GameManagementInputController(gameBus);
 		controls.add(gameManagementInputController);
 
-		this.impulseTransformController = new ImpulseTransformController(controllerState);
+		this.directTransformController = new DirectTransformController(controllerState);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class InputSystem implements GcsSystem<ControllableObject> {
 
 			if (controllableObject.getParent() != null && controllableObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
 				TransformObject transformObject = (TransformObject) controllableObject.getParent();
-				impulseTransformController.update(controllableObject, transformObject);
+				directTransformController.update(controllableObject, transformObject);
 			}
 
 		}

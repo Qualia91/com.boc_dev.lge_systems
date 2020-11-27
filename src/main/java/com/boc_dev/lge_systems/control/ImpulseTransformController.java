@@ -2,7 +2,6 @@ package com.boc_dev.lge_systems.control;
 
 import com.boc_dev.lge_model.gcs.Component;
 import com.boc_dev.lge_model.generated.components.*;
-import com.boc_dev.maths.objects.QuaternionF;
 import com.boc_dev.maths.objects.vector.Vec3d;
 import com.boc_dev.maths.objects.vector.Vec3f;
 
@@ -35,7 +34,7 @@ public class ImpulseTransformController {
 		this.keyMapping = keyMapping;
 	}
 
-	public void update(ControllableObject controllableObject, TransformObject transformObject) {
+	public void update(ImpulseControllableObject controllableObject) {
 		if (controllerState != null) {
 
 			// get rigid body object. It will be up one and then down one (same level as this)
@@ -77,9 +76,9 @@ public class ImpulseTransformController {
 							impulse = impulse.add(translationVectorMap.get("rightLinear"));
 						}
 
-						updater.setLinearVelocityImpulse(impulse.normalise().scale(controllableObject.getSpeed()).toVecd());
+						updater.setLinearVelocityImpulse(impulse.normalise().scale(controllableObject.getLinearSpeed()).toVecd());
 					}
-					if (controllableObject.getEnableLook()) {
+					if (controllableObject.getEnableRotate()) {
 						Vec3f angularImpulse = Vec3f.ZERO;
 
 						// up
@@ -107,7 +106,7 @@ public class ImpulseTransformController {
 							angularImpulse = angularImpulse.add(translationVectorMap.get("yawRight"));
 						}
 
-						updater.setAngularVelocityImpulse(angularImpulse.normalise().scale(controllableObject.getSensitivity()).toVecd());
+						updater.setAngularVelocityImpulse(angularImpulse.normalise().scale(controllableObject.getAngularSpeed()).toVecd());
 					}
 
 					updater.sendUpdate();
