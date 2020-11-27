@@ -14,7 +14,7 @@ public class InputSystem implements GcsSystem<ControllableObject> {
 
 	private final ArrayList<Control> controls = new ArrayList<>();
 	private final ControllerState controllerState;
-	private final DirectTransformController directTransformController;
+	private final ImpulseTransformController impulseTransformController;
 
 	public InputSystem(ControllerState controllerState, GameBus gameBus) {
 		this.controllerState = controllerState;
@@ -22,7 +22,7 @@ public class InputSystem implements GcsSystem<ControllableObject> {
 		GameManagementInputController gameManagementInputController = new GameManagementInputController(gameBus);
 		controls.add(gameManagementInputController);
 
-		this.directTransformController = new DirectTransformController(controllerState);
+		this.impulseTransformController = new ImpulseTransformController(controllerState);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class InputSystem implements GcsSystem<ControllableObject> {
 
 			if (controllableObject.getParent() != null && controllableObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
 				TransformObject transformObject = (TransformObject) controllableObject.getParent();
-				directTransformController.update(controllableObject, transformObject);
+				impulseTransformController.update(controllableObject, transformObject);
 			}
 
 		}

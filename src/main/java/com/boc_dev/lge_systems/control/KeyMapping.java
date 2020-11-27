@@ -8,6 +8,13 @@ public class KeyMapping {
 	private int forward;
 	private int back;
 
+	private int pitchUp;
+	private int pitchDown;
+	private int rollLeft;
+	private int rollRight;
+	private int yawLeft;
+	private int yawRight;
+
 	public KeyMapping() {
 		this.up = 81;
 		this.down = 69;
@@ -15,6 +22,13 @@ public class KeyMapping {
 		this.right = 68;
 		this.forward = 87;
 		this.back = 83;
+
+		this.pitchUp = 265;
+		this.pitchDown = 264;
+		this.rollLeft = 263;
+		this.rollRight = 262;
+		this.yawLeft = 90;
+		this.yawRight = 88;
 	}
 
 	public KeyMapping(int up, int down, int left, int right, int forward, int back) {
@@ -72,5 +86,29 @@ public class KeyMapping {
 
 	public void setBack(int back) {
 		this.back = back;
+	}
+
+	public int getPitchUp() {
+		return pitchUp;
+	}
+
+	public int getPitchDown() {
+		return pitchDown;
+	}
+
+	public int getRollLeft() {
+		return rollLeft;
+	}
+
+	public int getRollRight() {
+		return rollRight;
+	}
+
+	public int getYawLeft() {
+		return yawLeft;
+	}
+
+	public int getYawRight() {
+		return yawRight;
 	}
 }

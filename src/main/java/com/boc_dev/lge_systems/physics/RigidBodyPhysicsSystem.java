@@ -1,11 +1,14 @@
 package com.boc_dev.lge_systems.physics;
 
+import com.boc_dev.lge_model.gcs.Component;
 import com.boc_dev.lge_model.gcs.Registry;
 import com.boc_dev.lge_model.generated.components.ComponentType;
+import com.boc_dev.lge_model.generated.components.ImpulseObject;
 import com.boc_dev.lge_model.generated.components.RigidBodyObject;
 import com.boc_dev.lge_model.generated.components.TransformObject;
 import com.boc_dev.lge_model.generated.enums.RigidBodyObjectType;
 import com.boc_dev.lge_model.systems.GcsSystem;
+import com.boc_dev.maths.objects.vector.Vec3d;
 import com.boc_dev.physics_library.rigid_body_dynamics_verbose.RigidBody;
 import com.boc_dev.physics_library.rigid_body_dynamics_verbose.RigidBodyType;
 import com.boc_dev.physics_library.rigid_body_dynamics_verbose.Simulation;
@@ -46,6 +49,17 @@ public class RigidBodyPhysicsSystem implements GcsSystem<RigidBodyObject> {
 
 				TransformObject transformObject = (TransformObject) rigidBodyObject.getParent();
 
+				// get child impulse object
+				Vec3d velocityImpulse = Vec3d.ZERO;
+				Vec3d angularVelocityImpulse = Vec3d.ZERO;
+				for (Component child : transformObject.getChildren()) {
+					if (child.getComponentType().equals(ComponentType.IMPULSE)) {
+						ImpulseObject impulseObject = (ImpulseObject) child;
+						velocityImpulse = impulseObject.getLinearVelocityImpulse();
+						angularVelocityImpulse = impulseObject.getAngularVelocityImpulse();
+					}
+				}
+
 				rigidBodies.add(new RigidBody(
 						rigidBodyObject.getUuid(),
 						rigidBodyObject.getMass(),
@@ -54,6 +68,8 @@ public class RigidBodyPhysicsSystem implements GcsSystem<RigidBodyObject> {
 						transformObject.getRotation().toQuatD(),
 						rigidBodyObject.getLinearMomentum(),
 						rigidBodyObject.getAngularMomentum(),
+						transformObject.getRotation().rotateVector(velocityImpulse.toVec3f()).toVec3f().toVecd(),
+						transformObject.getRotation().rotateVector(angularVelocityImpulse.toVec3f()).toVec3f().toVecd(),
 						convertRigidBodyType(rigidBodyObject.getRigidBodyType())
 				));
 
