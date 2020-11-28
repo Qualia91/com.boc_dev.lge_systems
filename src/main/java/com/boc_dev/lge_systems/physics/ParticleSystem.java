@@ -16,69 +16,66 @@ public class ParticleSystem implements GcsSystem<ParticleBodyObject> {
 	@Override
 	public void update(long time, HashSet<ParticleBodyObject> particleBodyObjects, Registry registry) {
 
-		if (time > 1000) {
+		ArrayList<Particle> particles = new ArrayList<>();
 
-			ArrayList<Particle> particles = new ArrayList<>();
+		for (ParticleBodyObject particleBodyObject : particleBodyObjects) {
 
+			// get parent transform
+			if (particleBodyObject.getParent() != null && particleBodyObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
+
+				TransformObject transformObject = (TransformObject) particleBodyObject.getParent();
+
+				// get forces
+				ArrayList<NaryForce> forces = new ArrayList<>();
+				for (Component child : particleBodyObject.getChildren()) {
+					if (child.getComponentType().equals(ComponentType.PARTICLESIMPLEGRAVITY)) {
+						forces.add(new SimpleGravity(((ParticleSimpleGravityObject) child).getG()));
+					} else if (child.getComponentType().equals(ComponentType.PARTICLESPRING)) {
+						ParticleSpringObject spring = (ParticleSpringObject) child;
+						forces.add(new Spring(spring.getRestLength(), spring.getSpringConstant(), spring.getDampingConstant()));
+					} else if (child.getComponentType().equals(ComponentType.PARTICLEVISCOUSDRAG)) {
+						forces.add(new ViscousDrag(((ParticleViscousDragObject) child).getCoefficientOfDrag()));
+					}
+				}
+
+				particles.add(new Particle(
+						particleBodyObject.getUuid(),
+						particleBodyObject.getMass(),
+						transformObject.getPosition().toVecd(),
+						particleBodyObject.getVelocity(),
+						forces
+				));
+
+			}
+		}
+
+		particleSimulation.iterate(0.02, particles, new ArrayList());
+
+		Iterator<Particle> particleIterator = particles.iterator();
+		while (particleIterator.hasNext()) {
+
+			Particle next = particleIterator.next();
+
+			// find particle in sim
 			for (ParticleBodyObject particleBodyObject : particleBodyObjects) {
 
-				// get parent transform
-				if (particleBodyObject.getParent() != null && particleBodyObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
+				if (next.getUuid().equals(particleBodyObject.getUuid())) {
 
-					TransformObject transformObject = (TransformObject) particleBodyObject.getParent();
+					particleBodyObject.getUpdater().setVelocity(next.getVelocity()).sendUpdate();
 
-					// get forces
-					ArrayList<NaryForce> forces = new ArrayList<>();
-					for (Component child : particleBodyObject.getChildren()) {
-						if (child.getComponentType().equals(ComponentType.PARTICLESIMPLEGRAVITY)) {
-							forces.add(new SimpleGravity(((ParticleSimpleGravityObject) child).getG()));
-						} else if (child.getComponentType().equals(ComponentType.PARTICLESPRING)) {
-							ParticleSpringObject spring = (ParticleSpringObject) child;
-							forces.add(new Spring(spring.getRestLength(), spring.getSpringConstant(), spring.getDampingConstant()));
-						} else if (child.getComponentType().equals(ComponentType.PARTICLEVISCOUSDRAG)) {
-							forces.add(new ViscousDrag(((ParticleViscousDragObject) child).getCoefficientOfDrag()));
-						}
+					if (particleBodyObject.getParent() != null && particleBodyObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
+
+						TransformObject transformObject = (TransformObject) particleBodyObject.getParent();
+
+						transformObject.getUpdater()
+								.setPosition(next.getPosition().toVec3f())
+								.sendUpdate();
 					}
-
-					particles.add(new Particle(
-							particleBodyObject.getUuid(),
-							particleBodyObject.getMass(),
-							transformObject.getPosition().toVecd(),
-							particleBodyObject.getVelocity(),
-							forces
-					));
-
-				}
-			}
-
-			particleSimulation.iterate(0.02, particles, new ArrayList());
-
-			Iterator<Particle> particleIterator = particles.iterator();
-			while (particleIterator.hasNext()) {
-
-				Particle next = particleIterator.next();
-
-				// find particle in sim
-				for (ParticleBodyObject particleBodyObject : particleBodyObjects) {
-
-					if (next.getUuid().equals(particleBodyObject.getUuid())) {
-
-						particleBodyObject.getUpdater().setVelocity(next.getVelocity()).sendUpdate();
-
-						if (particleBodyObject.getParent() != null && particleBodyObject.getParent().getComponentType().equals(ComponentType.TRANSFORM)) {
-
-							TransformObject transformObject = (TransformObject) particleBodyObject.getParent();
-
-							transformObject.getUpdater()
-									.setPosition(next.getPosition().toVec3f())
-									.sendUpdate();
-						}
-					}
-
 				}
 
-				particleIterator.remove();
 			}
+
+			particleIterator.remove();
 		}
 
 	}
