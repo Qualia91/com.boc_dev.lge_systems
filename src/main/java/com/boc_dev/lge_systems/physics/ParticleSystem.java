@@ -5,7 +5,6 @@ import com.boc_dev.lge_model.gcs.Registry;
 import com.boc_dev.lge_model.generated.components.*;
 import com.boc_dev.lge_model.systems.GcsSystem;
 import com.boc_dev.physics_library.particle_system_dynamics_verbose.*;
-import com.boc_dev.physics_library.rigid_body_dynamics_verbose.RigidBody;
 
 import java.util.*;
 
@@ -28,13 +27,13 @@ public class ParticleSystem implements GcsSystem<ParticleBodyObject> {
 				// get forces
 				ArrayList<NaryForce> forces = new ArrayList<>();
 				for (Component child : particleBodyObject.getChildren()) {
-					if (child.getComponentType().equals(ComponentType.PARTICLESIMPLEGRAVITY)) {
-						forces.add(new SimpleGravity(((ParticleSimpleGravityObject) child).getG()));
+					if (child.getComponentType().equals(ComponentType.GRAVITY)) {
+						forces.add(new SimpleGravity(((GravityObject) child).getG()));
 					} else if (child.getComponentType().equals(ComponentType.PARTICLESPRING)) {
 						ParticleSpringObject spring = (ParticleSpringObject) child;
 						forces.add(new Spring(spring.getRestLength(), spring.getSpringConstant(), spring.getDampingConstant()));
-					} else if (child.getComponentType().equals(ComponentType.PARTICLEVISCOUSDRAG)) {
-						forces.add(new ViscousDrag(((ParticleViscousDragObject) child).getCoefficientOfDrag()));
+					} else if (child.getComponentType().equals(ComponentType.VISCOUSDRAG)) {
+						forces.add(new ViscousDrag(((ViscousDragObject) child).getCoefficientOfDrag()));
 					}
 				}
 
