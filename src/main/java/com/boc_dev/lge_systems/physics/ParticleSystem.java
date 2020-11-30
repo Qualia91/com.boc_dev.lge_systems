@@ -28,7 +28,12 @@ public class ParticleSystem implements GcsSystem<ParticleBodyObject> {
 				ArrayList<NaryForce> forces = new ArrayList<>();
 				for (Component child : particleBodyObject.getChildren()) {
 					if (child.getComponentType().equals(ComponentType.GRAVITY)) {
-						forces.add(new SimpleGravity(((GravityObject) child).getG()));
+						GravityObject gravityObject = (GravityObject) child;
+						if (gravityObject.getSimple()) {
+							forces.add(new SimpleGravity(((GravityObject) child).getG()));
+						} else {
+							forces.add(new Gravity(((GravityObject) child).getG()));
+						}
 					} else if (child.getComponentType().equals(ComponentType.PARTICLESPRING)) {
 						ParticleSpringObject spring = (ParticleSpringObject) child;
 						forces.add(new Spring(spring.getRestLength(), spring.getSpringConstant(), spring.getDampingConstant()));
