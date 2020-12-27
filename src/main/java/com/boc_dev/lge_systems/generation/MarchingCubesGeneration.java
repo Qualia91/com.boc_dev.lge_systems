@@ -143,7 +143,9 @@ public class MarchingCubesGeneration implements GcsSystem<MarchingCubeGeneration
 
 					cubeVertexIndex++;
 
-					if (point > 0) {
+					//float limit = (chunkIndex.getZ() * chunkIndex.getZ()) / 1000.0f;
+
+					if (point > 0.1) {
 						cubeIndex |= cubeIndexRHS;
 					}
 
