@@ -2,10 +2,7 @@ package com.boc_dev.lge_systems.gui;
 
 import com.boc_dev.lge_model.gcs.Component;
 import com.boc_dev.lge_model.gcs.Registry;
-import com.boc_dev.lge_model.generated.components.ButtonObject;
-import com.boc_dev.lge_model.generated.components.ComponentType;
-import com.boc_dev.lge_model.generated.components.SelectableObject;
-import com.boc_dev.lge_model.generated.components.TimerObject;
+import com.boc_dev.lge_model.generated.components.*;
 import com.boc_dev.lge_model.systems.GcsSystem;
 
 import java.util.HashSet;
@@ -29,9 +26,15 @@ public class ButtonSystem implements GcsSystem<ButtonObject> {
 
 							if (selectableObject.getSelected()) {
 
-								System.out.println(component.getFunctionName());
-
 								selectableObject.getUpdater().setSelected(false).sendUpdate();
+
+								// todo test code
+								for (Component textComp : registry.getComponentMap().get(ComponentType.TEXT)) {
+									TextObject textObject = (TextObject) textComp;
+									if (textObject.getName().equals("buttonResult")) {
+										textObject.getUpdater().setText(component.getFunctionName()).sendUpdate();
+									}
+								}
 
 							}
 

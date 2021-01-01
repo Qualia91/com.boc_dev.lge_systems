@@ -1,4 +1,4 @@
-package com.boc_dev.lge_systems.text;
+package com.boc_dev.lge_systems.gui;
 
 import com.boc_dev.lge_model.gcs.Registry;
 import com.boc_dev.lge_model.generated.components.*;
@@ -21,8 +21,10 @@ public class TextChangeSystem implements GcsSystem<TextObject> {
 	public void update(long timeStep, HashSet<TextObject> textObjects, Registry registry) {
 
 		for (TextObject textObject : textObjects) {
-			if (textObject.getName().equals("GameEngineTimeText"))
-			textObject.getUpdater().setText(String.valueOf(df.format(timeStep * 0.02))).sendUpdate();
+			if (textObject.getName().equals("GameEngineTimeText")) {
+				textObject.getUpdater().setText(String.valueOf(timeStep)).sendUpdate();
+				//textObject.getUpdater().setText(String.valueOf(df.format(timeStep * 0.02))).sendUpdate();
+			}
 		}
 
 	}
