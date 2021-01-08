@@ -20,20 +20,46 @@ public class ListSystem implements GcsSystem<ListObject> {
 		for (ListObject listObject : listObjects) {
 			// get all child transforms
 			float startZ = listObject.getGlobalTransform().getTranslationZ();
+			float startY = listObject.getGlobalTransform().getTranslationY();
+			float startX = listObject.getGlobalTransform().getTranslationX();
 			for (Component child : listObject.getChildren()) {
 				if (child.getComponentType().equals(ComponentType.TRANSFORM)) {
 					// check if transform object y is correct
 					TransformObject transformObject = (TransformObject) child;
-					if (!approxEqual(transformObject.getPosition().getZ(), startZ)) {
+					if (!approxEqual(transformObject.getPosition().getZ(), startZ) || !approxEqual(transformObject.getPosition().getY(), startY)) {
 						transformObject.getUpdater().setPosition(new Vec3f(
-								listObject.getGlobalTransform().getTranslationX(),
-								listObject.getGlobalTransform().getTranslationY(),
+								startX,
+								startY,
 								startZ
 						)).sendUpdate();
 					}
+
+					// if child of transform is another list, update indents accordingly
+//					boolean hasList = false;
+//					for (Component transformChild : transformObject.getChildren()) {
+//						if (transformChild.getComponentType().equals(ComponentType.TRANSFORM)) {
+//							if (transformChild.getComponentType().equals(ComponentType.LIST)) {
+//								ListObject childListObject = (ListObject) transformChild;
+//
+//								startZ += childListObject.getChildren().size() * childListObject.getSpacerZ();
+//								startY += childListObject.getChildren().size() * childListObject.getSpacerY();
+//
+//								hasList = true;
+//								break;
+//							}
+//						}
+//					}
+//					if (!hasList) {
+//
+//						startZ += listObject.getSpacerZ();
+//						startY += listObject.getSpacerY();
+//					}
+
+
+					startZ += listObject.getSpacerZ();
+					startY += listObject.getSpacerY();
 				}
 
-				startZ += listObject.getCellHeight();
 			}
 		}
 
