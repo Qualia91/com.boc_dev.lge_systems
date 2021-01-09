@@ -12,8 +12,8 @@ public class ScriptingSystem implements GcsSystem<ScriptObject> {
 
 	private final LuaScript luaScript;
 
-	public ScriptingSystem() {
-		this.luaScript = new LuaScript();
+	public ScriptingSystem(String scriptsFolderLocation) {
+		this.luaScript = new LuaScript(scriptsFolderLocation);
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public class ScriptingSystem implements GcsSystem<ScriptObject> {
 
 		for (ScriptObject scriptObject : scriptObjects) {
 
-			luaScript.call(scriptObject.getScriptCode(), registry);
+			luaScript.call(scriptObject.getScript(), registry);
 
 		}
 
