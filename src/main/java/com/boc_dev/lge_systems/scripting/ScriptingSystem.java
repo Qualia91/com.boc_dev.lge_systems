@@ -21,7 +21,7 @@ public class ScriptingSystem implements GcsSystem<ScriptObject> {
 
 		for (ScriptObject scriptObject : scriptObjects) {
 
-			luaScript.call(scriptObject.getScript(), registry);
+			luaScript.call(scriptObject.getScript(), scriptObject, registry);
 
 		}
 
